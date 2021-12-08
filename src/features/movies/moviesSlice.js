@@ -14,7 +14,7 @@ export const getMovies = createAsyncThunk(
  * @param items items to be sorted
  * @param key sort items based on order
  */
-export const sortBy = (items, key) => {
+export const sortItems = (items, key) => {
     let newList = [...items];
     newList = (newList && newList.length > 0 && key) &&
         newList.sort((a, b) => parseFloat(a[key]) - parseFloat(b[key]));
@@ -29,9 +29,15 @@ const moviesSlice = createSlice({
 
         status: null,
     },
+    reducers: {
+        sortBy(state, action) {
+            state.sortBy = action.payload;
+        }
+    },
     extraReducers: {
         [getMovies.pending]: (state, action) => {
             state.status = "loading";
+            state.movies = [];
         },
         [getMovies.fulfilled]: (state, action) => {
             state.status = "success";
@@ -43,7 +49,7 @@ const moviesSlice = createSlice({
     },
 });
 
-// Selectors for movies
+// Selector for movies
 export const selectMovies = (state) => {
     const movieItems = state.movies &&
         state.movies.movies &&
@@ -51,7 +57,7 @@ export const selectMovies = (state) => {
     return !!movieItems ? movieItems.items : [];
 };
 
-// Selectors for sort order
+// Selector for sort orders
 export const selectOrderBy = (state) => {
     const orderByItems = state.movies &&
         state.movies.movies &&
@@ -59,4 +65,10 @@ export const selectOrderBy = (state) => {
     return !!orderByItems ? orderByItems.items : []
 };
 
+// Selector to get selected sort order
+export const selectSortBy = (state) => {
+    return state.movies && state.movies.sortBy;
+};
+
+export const { sortBy } = moviesSlice.actions;
 export default moviesSlice.reducer;
